@@ -149,7 +149,7 @@
 
 <main>
   <div class="toolbar">
-    <input type="text" id="filter" placeholder="Filtra per data, posizione o elevazione…" autocomplete="off">
+    <input type="text" id="filter" placeholder="Filtra per data o posizione..." autocomplete="off">
     <span class="count" id="count"></span>
   </div>
 
@@ -174,8 +174,13 @@
         <td class="timestamp">2026-08-08</td>
         <td class="timestamp">00:53:04</td>
         <td class="position">right-center</td>
-        <td class="el">el 49.1°</td>
         <td class="name"><a href="2026-08-08_00.53.04__right-center_el49.1_report.html">2026-08-08_00.53.04__right-center_el49.1_report.html</a></td>
+      </tr>
+      <tr data-search="2026-08-10 00:16:49 right-center">
+        <td class="timestamp">2026-08-10</td>
+        <td class="timestamp">00:16:49</td>
+        <td class="position">right-center</td>
+        <td class="name"><a href="2026-08-10_00.16.49__galplane_right_centre_report.html">2026-08-10_00.16.49__galplane_right_centre_report.html</a></td>
       </tr>
     </tbody>
   </table>
@@ -190,7 +195,6 @@
 <script>
   const filterInput = document.getElementById('filter');
   const rows = Array.from(document.querySelectorAll('#report-list tr'));
-  const countEl = document.getElementById('count');
   const emptyState = document.getElementById('empty-state');
 
   function updateCount(visible) {
