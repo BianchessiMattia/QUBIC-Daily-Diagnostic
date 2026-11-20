@@ -1,0 +1,32 @@
+schema_version: 2
+review:
+  category: galactic plane
+  quality: bad
+  tags: []
+  warnings: 
+    - hwp not turning
+    - tbath not stable
+  comments:
+summary:
+  start: '2026-09-14T16:22:06'
+  end: '2026-09-14T17:23:10'
+  duration_s: 3664.3096776008606
+  az_min: 123.99
+  az_max: 174.01
+  el_min: 32.465
+  el_max: 39.285000000000004
+pointing:
+  status: ok
+  items: []
+300mK:
+  status: not stable
+  items: []
+1K:
+  status: ok
+  items: []
+hwp:
+  status: not turning
+  items: []
+dome:
+  status: open
+  items: []

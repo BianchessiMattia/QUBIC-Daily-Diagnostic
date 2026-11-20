@@ -1,0 +1,33 @@
+schema_version: 1
+review:
+  category: tower
+  quality: partial
+  tags: [tower, calsource, map]
+  warnings:
+  comments:
+summary:
+  start: '2026-11-16T08:40:46'
+  end: '2026-11-16T10:11:39'
+  duration_s: 5452.875347137451
+  az_min: -20.15
+  az_max: 39.95
+  el_min: 30.005000000000003
+  el_max: 70.055
+figures:
+  - temperature_diagnostic.png
+  - interactive_timeline_2026-11-16_08.40.48__calsource_map_tower_emission_map.png
+pointing:
+  status: OK
+  items: [Unexpected oscillations of the elevation of ~0.4°]
+300mK:
+  status: OK
+  items: ['Mean: 0.313 K', 'Peak to peak variation: 1.9 mK']
+1K:
+  status: OK
+  items: ['Mean: 1.078 K', 'Peak to peak variation: 4.5 mK']
+hwp:
+  status: OK
+  items: ['Fixed in position 6']
+dome:
+  status: Open
+  items: []

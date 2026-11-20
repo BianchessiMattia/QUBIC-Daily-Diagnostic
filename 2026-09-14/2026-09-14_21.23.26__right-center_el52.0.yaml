@@ -1,0 +1,31 @@
+schema_version: 2
+review:
+  category: galactic palne
+  quality: good
+  tags: []
+  warnings:
+    - check hwp
+  comments:
+summary:
+  start: '2026-09-14T21:23:24'
+  end: '2026-09-14T22:22:31'
+  duration_s: 3547.0034296512604
+  az_min: 150.5
+  az_max: 212.21
+  el_min: 49.135000000000005
+  el_max: 52.125
+pointing:
+  status: ok
+  items: []
+300mK:
+  status: stable
+  items: []
+1K:
+  status: stable
+  items: []
+hwp:
+  status: not moving
+  items: []
+dome:
+  status: open
+  items: []

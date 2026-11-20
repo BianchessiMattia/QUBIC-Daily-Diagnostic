@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QUBIC Daily Reports</title>
+<style>
+    :root {
+        --bg: #F7F8FA;
+        --card: #FFFFFF;
+        --text: #1A1D21;
+        --muted: #5B6470;
+        --accent: #2E6E8E;
+        --border: #D8DDE3;
+        --good: #4A7856;
+        --partial: #B7791F;
+        --bad: #A8433A;
+    }
+    * { box-sizing: border-box; }
+    /* Needed because li uses display:flex, which would override the hidden attribute used by the filters */
+    [hidden] { display: none !important; }
+
+    body {
+        font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 24px 60px;
+        line-height: 1.5;
+    }
+    h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 0;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+    }
+    .meta {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin: 8px 0 24px;
+    }
+
+    /* Filters */
+    #filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 14px 24px;
+        margin: 0 0 28px;
+        padding: 16px 18px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+    }
+    .filter {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        font-size: 0.85rem;
+    }
+    .filter .flabel {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .filter label { margin-right: 10px; white-space: nowrap; cursor: pointer; }
+    input[type=text], input[type=date], select {
+        font: inherit;
+        font-size: 0.9rem;
+        padding: 6px 9px;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        background: #fff;
+        color: var(--text);
+    }
+    input[type=text]:focus, input[type=date]:focus, select:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: -1px;
+    }
+    input[type=checkbox] { accent-color: var(--accent); }
+    button[type=reset] {
+        font: inherit;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        background: #fff;
+        color: var(--text);
+        cursor: pointer;
+    }
+    button[type=reset]:hover { background: var(--bg); border-color: var(--accent); }
+    #count { margin-left: auto; color: var(--muted); font-size: 0.85rem; }
+
+    /* Year > month > day tree */
+    details { margin: 6px 0; }
+    summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+    summary::marker { color: var(--accent); }
+    body > details {
+        margin: 10px 0;
+        padding: 6px 18px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+    }
+    summary.year { font-size: 1.2rem; }
+    details details {
+        margin: 2px 0 2px 14px;
+        padding-left: 14px;
+        border-left: 2px solid var(--border);
+    }
+    details details summary { font-weight: 500; }
+    details details details > summary {
+        font-size: 0.95rem;
+        color: var(--muted);
+    }
+
+    /* Datasets */
+    ul { list-style: none; margin: 4px 0 8px; padding: 0; }
+    li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 10px;
+        padding: 7px 10px;
+        border-radius: 6px;
+    }
+    li:hover { background: var(--bg); }
+    li a {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.9rem;
+        word-break: break-all;
+    }
+    li a:hover { text-decoration: underline; }
+    .nolink {
+        color: #9AA3AE;
+        font-size: 0.9rem;
+        word-break: break-all;
+    }
+    .badge {
+        display: inline-block;
+        margin-left: 0;
+        padding: 1px 9px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fff;
+    }
+    .badge-good { background: var(--good); }
+    .badge-partial { background: var(--partial); }
+    .badge-bad { background: var(--bad); }
+    .badge-unreviewed {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+    }
+    .category {
+        margin-left: auto;
+        padding: 1px 9px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--muted);
+        font-size: 0.78rem;
+    }
+</style>
+</head>
+<body>
+
+<h1>QUBIC Daily Reports</h1>
+<p class="meta">Index generated on {{ generation_date }}</p>
+
+<form id="filters">
+  {% for f in filters %}
+  <div class="filter" data-filter="{{ f.key }}" data-type="{{ f.type }}">
+    <span class="flabel">{{ f.label }}</span>
+    {% if f.type == "text" %}
+      <input type="text" autocomplete="off">
+    {% elif f.type == "select" %}
+      <select>
+        <option value="">all</option>
+        {% for o in f.options %}<option value="{{ o.value }}">{{ o.label }}</option>{% endfor %}
+      </select>
+    {% elif f.type == "checkbox" %}
+      <div>{% for o in f.options %}<label><input type="checkbox" value="{{ o.value }}"> {{ o.label }}</label>{% endfor %}</div>
+    {% elif f.type == "daterange" %}
+      <div><input type="date"> – <input type="date"></div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  <button type="reset">Reset</button>
+  <span id="count"></span>
+</form>
+
+{% for year, months in tree|dictsort(reverse=true) %}
+<details>
+  <summary class="year">{{ year }}</summary>
+  {% for month, days in months|dictsort(reverse=true) %}
+  <details>
+    <summary>{{ month_names[month] }}</summary>
+    {% for day, datasets in days|dictsort(reverse=true) %}
+    <details>
+      <summary>{{ day }}</summary>
+      <ul>
+        {% for ds in datasets %}
+        <li{% for f in filters %} data-{{ f.key }}="{{ ds[f.key] }}"{% endfor %}>
+          {% if ds.link %}<a href="{{ ds.link }}">{{ ds.name }}</a>
+          {% else %}<span class="nolink">{{ ds.name }} (no report)</span>{% endif %}
+          {% if ds.quality != "none" %}<span class="badge badge-{{ ds.quality }}">{{ ds.quality }}</span>{% endif %}
+          <span class="category">{{ ds.category }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endfor %}
+  </details>
+  {% endfor %}
+</details>
+{% endfor %}
+
+<script>
+  const form = document.getElementById('filters');
+  const controls = Array.from(form.querySelectorAll('.filter'));
+  const rows = Array.from(document.querySelectorAll('li[data-date]'));
+  const total = rows.length;
+
+  // One predicate builder per control type: returns a function row -> bool,
+  // or null when the filter is not active. A new type only needs a new entry here.
+  const BUILDERS = {
+    text(ctl, key) {
+      const words = ctl.querySelector('input').value.toLowerCase().split(/\s+/).filter(Boolean);
+      if (!words.length) return null;
+      return row => words.every(w => row.dataset[key].toLowerCase().includes(w));
+    },
+    select(ctl, key) {
+      const value = ctl.querySelector('select').value;
+      return value ? row => row.dataset[key] === value : null;
+    },
+    checkbox(ctl, key) {
+      const values = Array.from(ctl.querySelectorAll('input:checked')).map(i => i.value);
+      return values.length ? row => values.includes(row.dataset[key]) : null;
+    },
+    daterange(ctl, key) {
+      const [from, to] = ctl.querySelectorAll('input');
+      if (!from.value && !to.value) return null;
+      // ISO dates (YYYY-MM-DD) compare correctly as strings; bounds are inclusive
+      return row => (!from.value || row.dataset[key] >= from.value)
+                 && (!to.value || row.dataset[key] <= to.value);
+    },
+  };
+
+  function applyFilters() {
+    const predicates = controls
+      .map(c => BUILDERS[c.dataset.type](c, c.dataset.filter))
+      .filter(Boolean);
+
+    // A dataset is shown only if it passes all the active filters
+    let visible = 0;
+    rows.forEach(row => {
+      row.hidden = !predicates.every(p => p(row));
+      if (!row.hidden) visible++;
+    });
+
+    // Hide days/months/years without results; open the others only while filtering
+    const filtering = predicates.length > 0;
+    document.querySelectorAll('details').forEach(d => {
+      const hasResults = d.querySelector('li:not([hidden])') !== null;
+      d.hidden = !hasResults;
+      d.open = filtering && hasResults;
+    });
+
+    document.getElementById('count').textContent = `${visible} of ${total} datasets`;
+  }
+
+  form.addEventListener('input', applyFilters);
+  form.addEventListener('submit', e => e.preventDefault());
+  // The reset event fires before the values are cleared: defer the update
+  form.addEventListener('reset', () => setTimeout(applyFilters, 0));
+  applyFilters();
+</script>
+
+</body>
+</html>
